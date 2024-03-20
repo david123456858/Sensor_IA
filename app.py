@@ -2,7 +2,7 @@ from typing import Union
 from fastapi import FastAPI,UploadFile,File,Response,status
 from fastapi.responses import UJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from src.controller.sensor import read_file
+from src.controller.sensor import read_file,generateWAndU
 
 app = FastAPI()
 app.add_middleware(
@@ -23,7 +23,8 @@ async def recive_file(res:Response,file:UploadFile = File()):
     if(file):
         res.status_code = status.HTTP_202_ACCEPTED
         x,y,num_pa = await read_file(file)
-        return [{"x": x,"y": y,"patr":num_pa}]
+        w,u = generateWAndU(x,y)
+        return [{"x": x,"y": y,"patr":num_pa,"W":w,"U":u}]
 
 
-    
+     
