@@ -1,8 +1,10 @@
-from typing import Union
 from fastapi import FastAPI,UploadFile,File,Response,status
 from fastapi.responses import UJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
+
 from src.controller.sensor import read_file,generateWAndU
+
 
 app = FastAPI()
 app.add_middleware(
@@ -23,9 +25,17 @@ def read_root():
 async def recive_file(res:Response,file:UploadFile = File()):
     if(file):
         res.status_code = status.HTTP_202_ACCEPTED
-        x,y,num_pa = await read_file(file)
+        x,y,num_pa,df = await read_file(file)
+        cabeceras = df.columns.to_list()
+        valores = df.values.tolist()
         w,u = generateWAndU(x,y)
-        return [{"x": x,"y": y,"patr":num_pa,"W":w,"U":u}]
+        return [{"entradas": x,
+                 "salidas": y,
+                 "patrones":num_pa,
+                 "W":w,
+                 "U":u,
+                 "cabeceras":cabeceras,
+                 "valores":valores}]
 
 
      
