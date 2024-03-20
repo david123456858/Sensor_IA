@@ -17,11 +17,13 @@ app.add_middleware(
 def read_root():
     return {"Hello": "Word"}
 
+##Post donde se nos permite traer el archivo de entrenamiento y hacer el debido proceso de inializacion 
 @app.post('/file/',status_code=202,response_class=UJSONResponse)
 async def recive_file(res:Response,file:UploadFile = File()):
     if(file):
         res.status_code = status.HTTP_202_ACCEPTED
-        df = await read_file(file)
-        print(df.head())
+        x,y,num_pa = await read_file(file)
+        return [{"x": x,"y": y,"patr":num_pa}]
+
 
     
