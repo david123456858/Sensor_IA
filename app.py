@@ -33,10 +33,6 @@ async def recive_file(res:Response,file:UploadFile = File()):
         print("df:",df)
         x_columns = df.filter(like='X')
         y_columns = df.filter(like='Y')
-        print(x_columns)
-        print(y_columns)
-        valores = df.values.tolist()
-        print(valores)
         w,u = generateWAndU(x,y)
         return [{ "entradas": x,
                   "salidas": y,
@@ -44,19 +40,15 @@ async def recive_file(res:Response,file:UploadFile = File()):
                   "W":w,
                   "U":u,
                   "cabeceras":cabeceras,
-                
-                  "valores":valores,
                   "valoresSalidas":y_columns.values.tolist(),
                   "valoresEntradas":x_columns.values.tolist(),}]
 
+##subiendo el arhivo
 @app.post("/save",status_code=200,response_class=UJSONResponse)
 def saveW_U(values_data:sensor):
-    data= {}
-    data['W'] = values_data.valueW
-    data['U'] = values_data.valueU
-    print(data)
-    df = pd.DataFrame(data)
+    global cont
+    df = pd.DataFrame(values_data.valueW)
     cont = cont + 1 
-    df.to_excel("./src/upload/datos"+ str(cont) + ".xlsx",index=False)
+    ##df.to_excel("./src/upload/datos"+ str(cont) + ".xlsx",index=False)
     return {"Los valores se han guardado correctamente"}
       

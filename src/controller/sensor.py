@@ -2,6 +2,7 @@ from fastapi import File,UploadFile
 import pandas as pd
 import random
 
+from src.model.sensorW import sensor
 def calculateSW():
     print("hello")
     
@@ -37,4 +38,8 @@ def generateWAndU(x,y):
     u = [round(random.uniform(-1,1),1) for _ in range(y)]
     return w,u
 
-
+def saveValues(data:sensor):
+    dfW = pd.DataFrame(data.valueW)
+    dfU = pd.DataFrame(data.valueU)
+    dfW.columns = ["W1","W2"]
+    dfU.columns = ["U"]
