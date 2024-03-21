@@ -31,7 +31,13 @@ async def recive_file(res:Response,file:UploadFile = File()):
         res.status_code = status.HTTP_202_ACCEPTED
         x,y,num_pa,df = await read_file(file)
         cabeceras = df.columns.to_list()
+        print("df:",df)
+        x_columns = df.filter(like='X')
+        y_columns = df.filter(like='Y')
+        print(x_columns)
+        print(y_columns)
         valores = df.values.tolist()
+        print(valores)
         w,u = generateWAndU(x,y)
         return [{ "entradas": x,
                   "salidas": y,
@@ -39,7 +45,10 @@ async def recive_file(res:Response,file:UploadFile = File()):
                   "W":w,
                   "U":u,
                   "cabeceras":cabeceras,
-                  "valores":valores}]
+                
+                  "valores":valores,
+                  "valoresSalidas":y_columns.values.tolist(),
+                  "valoresEntradas":x_columns.values.tolist(),}]
 
 
      

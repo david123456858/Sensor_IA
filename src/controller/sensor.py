@@ -12,7 +12,10 @@ async def read_file(file:UploadFile = File()):
     df = pd.read_excel(contest)
     heads = list(df.columns)
     x,y = count_v(heads)
+ 
+    
     num_pa = df.shape[0]
+    # print("df0",df)
     return x,y,num_pa,df
 
 async def read_file_txt():
@@ -23,7 +26,7 @@ def count_v(list:list):
     x = 0
     y = 0
     for index in list:
-        print(index)
+        # print(index)
         x = x + index.count('X')
         y = y + index.count('YD')
     return x,y   
