@@ -1,7 +1,7 @@
 from fastapi import File,UploadFile
 import pandas as pd
 import random
-
+import os
 from src.model.sensorW import sensor
 def calculateSW():
     print("hello")
@@ -43,3 +43,5 @@ def saveValues(data:sensor):
     dfU = pd.DataFrame(data.valueU)
     dfW.columns = ["W1","W2"]
     dfU.columns = ["U"]
+    return dfW,dfU
+

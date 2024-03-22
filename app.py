@@ -2,13 +2,14 @@ from fastapi import FastAPI,UploadFile,File,Response,status
 from fastapi.responses import UJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
+import os
 
-from src.controller.sensor import read_file,generateWAndU
+from src.controller.sensor import read_file,generateWAndU,saveValues
+from src.upload.save_file import data_root
 from src.model.sensorW import sensor
 
 
 app = FastAPI()
-cont = 0
 
 app.add_middleware(
     CORSMiddleware,
@@ -46,9 +47,11 @@ async def recive_file(res:Response,file:UploadFile = File()):
 ##subiendo el arhivo
 @app.post("/save",status_code=200,response_class=UJSONResponse)
 def saveW_U(values_data:sensor):
-    global cont
-    df = pd.DataFrame(values_data.valueW)
-    cont = cont + 1 
-    ##df.to_excel("./src/upload/datos"+ str(cont) + ".xlsx",index=False)
+    _path = data_root()
+    print(_path)
+    dfW,dfU = saveValues(values_data)
+    with pd.ExcelWriter(_path) as writer:
+        dfW.to_excel(writer,sheet_name='Hoja1', index=False)
+        dfU.to_excel(writer,sheet_name='Hoja2',index=False)
     return {"Los valores se han guardado correctamente"}
       
