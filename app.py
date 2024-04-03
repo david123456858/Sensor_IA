@@ -35,14 +35,14 @@ async def recive_file(res:Response,file:UploadFile = File()):
         x_columns = df.filter(like='X')
         y_columns = df.filter(like='Y')
         w,u = generateWAndU(x,y)
-        return [{ "entradas": x,
-                  "salidas": y,
-                  "patrones":num_pa,
+        return [{ "numEntradas": x,
+                  "numSalidas": y,
+                  "numPatrones":num_pa,
                   "W":w,
                   "U":u,
                   "cabeceras":cabeceras,
-                  "valoresSalidas":y_columns.values.tolist(),
-                  "valoresEntradas":x_columns.values.tolist(),}]
+                  "salidas":y_columns.values.tolist(),
+                  "entradas":x_columns.values.tolist(),}]
 
 ##subiendo el arhivo
 @app.post("/save",status_code=200,response_class=UJSONResponse)
