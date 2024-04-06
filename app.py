@@ -44,6 +44,17 @@ async def recive_file(res:Response,file:UploadFile = File()):
                   "salidas":y_columns.values.tolist(),
                   "entradas":x_columns.values.tolist(),}]
 
+
+@app.post('/simular',status_code=202,response_class=UJSONResponse)
+async def recive_file(res:Response,file:UploadFile = File()):
+    if(file):
+        res.status_code = status.HTTP_202_ACCEPTED
+        x,y,num_pa,df = await read_file(file)
+        print("df:",df)
+        x_columns = df.filter(like='X')
+        return [{ 
+                  "entradas":x_columns.values.tolist(),}]
+
 ##subiendo el arhivo
 @app.post("/save",status_code=200,response_class=UJSONResponse)
 def saveW_U(values_data:sensor):
