@@ -3,6 +3,7 @@ from fastapi.responses import UJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import os
+import json
 
 from src.controller.sensor import read_file,generateWAndU,saveValues,sensor_data,generateWandUforCapas
 from src.upload.save_file import data_root
@@ -73,12 +74,14 @@ def saveW_U(values_data:sensor):
 @app.post("/capas",status_code=200, response_class=UJSONResponse)
 async def file_recive(capas_info:capas,res:Response):
     if(capas_info):
-        print(capas_info.numNeu)
-        print(capas_info.x,capas_info.y)
         res.status_code = status.HTTP_202_ACCEPTED
         pesos,umbrales = generateWandUforCapas(capas_info)
-        return [{
-            "pesos":pesos,
-            "umbrales":umbrales
-        }]
-        
+        data = {}
+        for i, (peso_capa,umbral_capa) in enumerate(zip(pesos,umbrales)):
+            data[f"capa{i}"] = {
+                "pesos":peso_capa,
+                "umbrales":umbral_capa
+            }   
+        return data
+
+     
