@@ -3,8 +3,15 @@ import pandas as pd
 import random
 import os
 from src.model.sensorW import sensor
+from src.model.capas import capas
 def calculateSW():
     print("hello")
+
+def sensor_data(data:sensor) -> pd.DataFrame:
+    print("data", data)
+    df_W = pd.DataFrame(data.valueW,columns=[f'W{i}' for i in range(len(data.valueW[0]))]) 
+    df_W['U'] = data.valueU
+    return df_W
     
 async def read_file(file:UploadFile = File()):
     if file is None:
@@ -23,7 +30,7 @@ async def read_file_txt():
     print()    
     
 ##contador de las entradas y salidas
-def count_v(list:list):
+def count_v(list:list)-> any:
     x = 0
     y = 0
     for index in list:
@@ -33,7 +40,7 @@ def count_v(list:list):
     return x,y   
 
 ##Generando los pesos y umbrales 
-def generateWAndU(x,y):
+def generateWAndU(x,y) :
     w = [[round(random.uniform(0,1), 1) for _ in range(y)]for _ in range(x)]
     u = [round(random.uniform(-1,1),1) for _ in range(y)]
     return w,u
@@ -45,3 +52,25 @@ def saveValues(data:sensor):
     dfU.columns = ["U"]
     return dfW,dfU
 
+def generateWandUforCapas(data:capas):
+    weights = []
+    biases = []
+    for i in range(len(data.numNeu)):
+        if i == 0:  # Para la primera capa
+            # Generar matriz de pesos y vector de sesgo
+            w, u = generateWAndU(data.numNeu[i], data.x)
+            weights.append(w)
+            biases.append(u)
+        elif i < len(data) - 1:  # Para las capas intermedias
+            # Generar matriz de pesos y vector de sesgo
+            w, u = generateWAndU(data.numNeu[i], data.numNeu[i-1])
+            weights.append(w)
+            biases.append(u)
+        else:  # Para la última capa
+            # Generar matriz de pesos y vector de sesgo
+            w, u = generateWAndU(data.y, data.numNeu[i])
+            weights.append(w)
+            biases.append(u)
+    
+    return weights, biases
+    

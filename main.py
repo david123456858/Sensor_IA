@@ -1,12 +1,13 @@
-from fastapi import FastAPI,UploadFile,File,Response,status
+from fastapi import FastAPI,UploadFile,File,Response,status,Body
 from fastapi.responses import UJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import os
 
-from src.controller.sensor import read_file,generateWAndU,saveValues
+from src.controller.sensor import read_file,generateWAndU,saveValues,sensor_data,generateWandUforCapas
 from src.upload.save_file import data_root
 from src.model.sensorW import sensor
+from src.model.capas import capas
 
 
 app = FastAPI()
@@ -60,9 +61,24 @@ async def recive_file(res:Response,file:UploadFile = File()):
 def saveW_U(values_data:sensor):
     _path = data_root()
     print(_path)
-    dfW,dfU = saveValues(values_data)
-    with pd.ExcelWriter(_path) as writer:
-        dfW.to_excel(writer,sheet_name='Hoja1', index=False)
-        dfU.to_excel(writer,sheet_name='Hoja2',index=False)
+    df = sensor_data(values_data)
+    print(df)
+    df.to_excel(_path, index=False)
+    # dfW,dfU = saveValues(values_data)
+    # with pd.ExcelWriter(_path) as writer:
+    #     dfW.to_excel(writer,sheet_name='Hoja1', index=False)
+    #     dfU.to_excel(writer,sheet_name='Hoja2',index=False)
     return {"Los valores se han guardado correctamente"}
       
+@app.post("/capas",status_code=200, response_class=UJSONResponse)
+async def file_recive(capas_info:capas,res:Response):
+    if(capas_info):
+        print(capas_info.numNeu)
+        print(capas_info.x,capas_info.y)
+        res.status_code = status.HTTP_202_ACCEPTED
+        pesos,umbrales = generateWandUforCapas(capas_info)
+        return [{
+            "pesos":pesos,
+            "umbrales":umbrales
+        }]
+        
