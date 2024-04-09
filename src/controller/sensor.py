@@ -45,6 +45,10 @@ def generateWAndU(x,y) :
     u = [round(random.uniform(-1,1),1) for _ in range(y)]
     return w,u
 
+def generateWAndUBack(x,y) :
+    w = [[round(random.uniform(0,1), 1) for _ in range(y)]for _ in range(x)]
+    u = [round(random.uniform(-1,1),1) for _ in range(y)]
+    return w,u
 def saveValues(data:sensor):
     dfW = pd.DataFrame(data.valueW)
     dfU = pd.DataFrame(data.valueU)
@@ -58,19 +62,32 @@ def generateWandUforCapas(data:capas):
     for i in range(len(data.numNeu)):
         if i == 0:  # Para la primera capa
             # Generar matriz de pesos y vector de sesgo
-            w, u = generateWAndU(data.numNeu[i], data.x)
+            w, u = generateWAndUBack(data.x, data.numNeu[i])
             weights.append(w)
             biases.append(u)
-        elif i < len(data) - 1:  # Para las capas intermedias
-            # Generar matriz de pesos y vector de sesgo
-            w, u = generateWAndU(data.numNeu[i], data.numNeu[i-1])
+            if(len(data.numNeu) == 1):
+                ##si solo hay una capa, entonces solo hay necesidad de tener dos pesos y salirme 
+                w,u = generateWAndUBack(data.numNeu[i], data.y)
+                weights.append(w)
+                biases.append(u)
+                return
+            
+        elif i < len(data.numNeu) - 1:  # Para las capas intermedias
+            # Cunando toca en una capa intermedia toca evaluar la actual y la anterior pero tambien verificar 
+            w, u = generateWAndUBack(data.numNeu[i-1], data.numNeu[i])
             weights.append(w)
             biases.append(u)
+            
         else:  # Para la última capa
-            # Generar matriz de pesos y vector de sesgo
-            w, u = generateWAndU(data.y, data.numNeu[i])
+            
+            w,u = generateWAndUBack(data.numNeu[i-1], data.numNeu[i])
             weights.append(w)
             biases.append(u)
+            # Generar matriz de pesos y vector de sesgo
+            w, u = generateWAndUBack(data.numNeu[i], data.y)
+            weights.append(w)
+            biases.append(u)
+            
     
     return weights, biases
     
