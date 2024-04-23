@@ -1,5 +1,6 @@
 import os
 cont = 0
+## acceder a la ruta
 def data_root():
     global cont 
     cont = cont + 1

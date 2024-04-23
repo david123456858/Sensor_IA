@@ -25,7 +25,12 @@ app.add_middleware(
 def read_root():
     return {"info":"Bienvenido a nuestro back del sensor"}
 
+## find() // find_one() 
+
+##Conexion a mongoDB para poder extraer los datos 
+
 ##Post donde se nos permite traer el archivo de entrenamiento y hacer el debido proceso de inializacion 
+
 @app.post('/file',status_code=202,response_class=UJSONResponse)
 async def recive_file(res:Response,file:UploadFile = File()):
     if(file):
@@ -44,6 +49,7 @@ async def recive_file(res:Response,file:UploadFile = File()):
                   "cabeceras":cabeceras,
                   "salidas":y_columns.values.tolist(),
                   "entradas":x_columns.values.tolist(),}]
+        
 @app.post('/simular',status_code=202,response_class=UJSONResponse)
 async def recive_file(res:Response,file:UploadFile = File()):
     if(file):
@@ -51,8 +57,8 @@ async def recive_file(res:Response,file:UploadFile = File()):
         x,y,num_pa,df = await read_file(file)
         print("df:",df)
         x_columns = df.filter(like='X')
-        return [{ 
-                  "entradas":x_columns.values.tolist(),}]
+        return [{ "entradas":x_columns.values.tolist() }]
+        
 ##subiendo el arhivo
 @app.post("/save",status_code=200,response_class=UJSONResponse)
 def saveW_U(values_data:sensor):
@@ -61,8 +67,9 @@ def saveW_U(values_data:sensor):
     df = sensor_data(values_data)
     print(df)
     df.to_excel(_path, index=False)
-    return {"Los valores se han guardado correctamente"}
+    return { "Los valores se han guardado correctamente" }
       
+##Mandando los capas 
 @app.post("/capas",status_code=200, response_class=UJSONResponse)
 async def file_recive(capas_info:capas,res:Response):
     if(capas_info):
