@@ -1,4 +1,4 @@
-from fastapi import FastAPI,UploadFile,File,Response,status,Body
+from fastapi import FastAPI,UploadFile,File,Response,status
 from fastapi.responses import UJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd

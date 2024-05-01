@@ -1,7 +1,6 @@
 from fastapi import File,UploadFile
 import pandas as pd
 import random
-import os
 from src.model.sensorW import sensor
 from src.model.capas import capas
 
@@ -14,6 +13,14 @@ def palabra_binaria(palabra):
     pBytes = palabra.encode('utf-8')
     bits = ''.join(format(byte, '08b')for byte in pBytes)
     return bits
+def agregar_coma_decimal(binario):
+    # Dividimos el binario en parte entera y parte decimal
+    parte_entera = binario[:4]  # Tomamos los primeros 4 bits como la parte entera
+    parte_decimal = binario[4:]  # Tomamos el resto como la parte decimal
+    # Unimos la parte entera y la parte decimal con la coma decimal
+    binario_con_coma = parte_entera + '.' + parte_decimal
+    return binario_con_coma
+
 async def read_file(file:UploadFile = File()):
     if file is None:
         return {"Error not found"}
@@ -23,13 +30,16 @@ async def read_file(file:UploadFile = File()):
     heads = list(df.columns)
     x,y = count_v(heads)
     num_pa = df.shape[0]
-    # print("df0",df)
     return x,y,num_pa,df
 
 def palabras_binarias(data):
     data_binaria = data.applymap(palabra_binaria)
-    return data_binaria
-
+    data_binaria = data_binaria.applymap(agregar_coma_decimal)
+    data_decimal = data_binaria.applymap(numero_decimales)
+    return data_decimal
+def numero_decimales(data):
+    decimal = int(data.replace('.',''),2)
+    return decimal
 async def read_binary(file:UploadFile = File()):
     if file is None:
         return {"Error not found"}
@@ -39,7 +49,6 @@ async def read_binary(file:UploadFile = File()):
     heads = list(df.columns)
     x,y = count_v(heads)
     num_pa = df.shape[0]
-    # print("df0",df)
     print(df)
     return x,y,num_pa,df
     
