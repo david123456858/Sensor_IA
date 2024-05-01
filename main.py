@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 
 
-from src.controller.sensor import read_file,generateWAndU,saveValues,sensor_data,generateWandUforCapas
+from src.controller.sensor import read_file,generateWAndU,sensor_data,generateWandUforCapas,read_binary
 from src.upload.save_file import data_root
 from src.model.sensorW import sensor
 from src.model.capas import capas
@@ -30,7 +30,14 @@ def read_root():
 ##Conexion a mongoDB para poder extraer los datos 
 
 ##Post donde se nos permite traer el archivo de entrenamiento y hacer el debido proceso de inializacion 
-
+@app.post('/file/binary',status_code=200,response_class=UJSONResponse)
+async def current_data(res:Response,file:UploadFile= File()):
+    if(file):
+        res.status_code = status.HTTP_202_ACCEPTED
+        await read_binary(file)
+        
+    
+    
 @app.post('/file',status_code=202,response_class=UJSONResponse)
 async def recive_file(res:Response,file:UploadFile = File()):
     if(file):

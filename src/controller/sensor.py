@@ -4,30 +4,52 @@ import random
 import os
 from src.model.sensorW import sensor
 from src.model.capas import capas
-def calculateSW():
-    print("hello")
 
 def sensor_data(data:sensor) -> pd.DataFrame:
     print("data", data)
     df_W = pd.DataFrame(data.valueW,columns=[f'W{i}' for i in range(len(data.valueW[0]))]) 
     df_W['U'] = data.valueU
     return df_W
-    
+def palabra_binaria(palabra):
+    pBytes = palabra.encode('utf-8')
+    bits = ''.join(format(byte, '08b')for byte in pBytes)
+    return bits
 async def read_file(file:UploadFile = File()):
     if file is None:
         return {"Error not found"}
     contest = await file.read()
     df = pd.read_excel(contest)
+    print(df)
     heads = list(df.columns)
     x,y = count_v(heads)
- 
-    
     num_pa = df.shape[0]
     # print("df0",df)
     return x,y,num_pa,df
 
-async def read_file_txt():
-    print()    
+def palabras_binarias(data):
+    data_binaria = data.applymap(palabra_binaria)
+    return data_binaria
+
+async def read_binary(file:UploadFile = File()):
+    if file is None:
+        return {"Error not found"}
+    contest = await file.read()
+    df = pd.read_excel(contest)
+    df = palabras_binarias(df)
+    heads = list(df.columns)
+    x,y = count_v(heads)
+    num_pa = df.shape[0]
+    # print("df0",df)
+    print(df)
+    return x,y,num_pa,df
+    
+    
+    # heads = list(df.columns)
+    # x,y = count_v(heads)
+    # num_pa = df.shape[0]
+    # # print("df0",df)
+    # return x,y,num_pa,df
+    
     
 ##contador de las entradas y salidas
 def count_v(list:list)-> any:
