@@ -30,12 +30,11 @@ async def read_binary(file:UploadFile = File()):
     read = await file.read()
     df = pd.read_excel(read)
     h = df.columns
-    print("banco",df)
-    print("columnas",h)
     heads = list(df.columns)
     df = changePropery(df)
-    print(df)
     x,y = count_v(heads)
+    numpa= df.shape[0]
+    return x,y,numpa,df
     
 def changePropery(banco:pd.DataFrame) -> pd.DataFrame:
     res = identBanco(banco)
@@ -45,13 +44,12 @@ def changePropery(banco:pd.DataFrame) -> pd.DataFrame:
         banco["X3"] = banco["X3"].replace(mapeoBanco["trabajo"])
         banco["YD1"] = banco["YD1"].replace(mapeoBanco["credito"])
         return banco
-    else:
-        banco["X1"] = banco["X1"].replace(mapeoBanco["Edad"])
-        banco["X2"] = banco["X2"].replace(mapeoBanco["Anomalía"])
-        banco["X3"] = banco["X3"].replace(mapeoBanco["Astigmatismo"])
-        banco["YD1"] = banco["YD1"].replace(mapeoBanco["Lentes de contacto"])
-        return banco   
-    return banco  
+    if not res:
+        banco["X1"] = banco["X1"].replace(mapeoOptica["Edad"])
+        banco["X2"] = banco["X2"].replace(mapeoOptica["Anomalía"])
+        banco["X3"] = banco["X3"].replace(mapeoOptica["Astigmatismo"])
+        banco["YD1"] = banco["YD1"].replace(mapeoOptica["Lentes de contacto"])
+        return banco  
 def identBanco(banco:pd.DataFrame) -> bool:
     for indice,fila in banco.iterrows():
         for columna in banco.columns:

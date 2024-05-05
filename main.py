@@ -30,7 +30,17 @@ def read_root():
 async def current_data(res:Response,file:UploadFile= File()):
     if(file):
         res.status_code = status.HTTP_202_ACCEPTED
-        await read_binary(file)
+        x,y,num_pa,df = await read_binary(file)
+        cabeceras = df.columns.to_list()
+        x_columns = df.filter(like='X')
+        y_columns = df.filter(like='Y')
+        print(df)
+        return [{ "numEntradas": x,
+                  "numSalidas": y,
+                  "numPatrones":num_pa,
+                  "cabeceras":cabeceras,
+                  "salidas":y_columns.values.tolist(),
+                  "entradas":x_columns.values.tolist()}]
         
     
     
