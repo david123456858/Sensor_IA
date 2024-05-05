@@ -9,18 +9,6 @@ def sensor_data(data:sensor) -> pd.DataFrame:
     df_W = pd.DataFrame(data.valueW,columns=[f'W{i}' for i in range(len(data.valueW[0]))]) 
     df_W['U'] = data.valueU
     return df_W
-def palabra_binaria(palabra):
-    pBytes = palabra.encode('utf-8')
-    bits = ''.join(format(byte, '08b')for byte in pBytes)
-    return bits
-def agregar_coma_decimal(binario):
-    # Dividimos el binario en parte entera y parte decimal
-    parte_entera = binario[:4]  # Tomamos los primeros 4 bits como la parte entera
-    parte_decimal = binario[4:]  # Tomamos el resto como la parte decimal
-    # Unimos la parte entera y la parte decimal con la coma decimal
-    binario_con_coma = parte_entera + '.' + parte_decimal
-    return binario_con_coma
-
 async def read_file(file:UploadFile = File()):
     if file is None:
         return {"Error not found"}
@@ -32,33 +20,20 @@ async def read_file(file:UploadFile = File()):
     num_pa = df.shape[0]
     return x,y,num_pa,df
 
-def palabras_binarias(data):
-    data_binaria = data.applymap(palabra_binaria)
-    data_binaria = data_binaria.applymap(agregar_coma_decimal)
-    data_decimal = data_binaria.applymap(numero_decimales)
-    return data_decimal
-def numero_decimales(data):
-    decimal = int(data.replace('.',''),2)
-    return decimal
+
 async def read_binary(file:UploadFile = File()):
     if file is None:
-        return {"Error not found"}
-    contest = await file.read()
-    df = pd.read_excel(contest)
-    df = palabras_binarias(df)
+        return {"Not Found"}
+    read = await file.read()
+    df = pd.read_excel(read)
     heads = list(df.columns)
     x,y = count_v(heads)
-    num_pa = df.shape[0]
-    print(df)
-    return x,y,num_pa,df
     
+    print(read)
     
-    # heads = list(df.columns)
-    # x,y = count_v(heads)
-    # num_pa = df.shape[0]
-    # # print("df0",df)
-    # return x,y,num_pa,df
+def changePropery(banco:pd.DataFrame) -> pd.DataFrame:
     
+    print(banco)
     
 ##contador de las entradas y salidas
 def count_v(list:list)-> any:

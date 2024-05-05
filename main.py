@@ -11,7 +11,6 @@ from src.model.capas import capas
 
 
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  
@@ -19,12 +18,9 @@ app.add_middleware(
     allow_methods=["*"],  
     allow_headers=["*"], 
 )
-
-
 @app.get('/')
 def read_root():
     return {"info":"Bienvenido a nuestro back del sensor"}
-
 ## find() // find_one() 
 
 ##Conexion a mongoDB para poder extraer los datos 
