@@ -1,14 +1,17 @@
 from fastapi import File,UploadFile
 import pandas as pd
 import random
+
 from src.model.sensorW import sensor
 from src.model.capas import capas
+from src.controller.map import mapeoBanco,mapeoOptica
 
 def sensor_data(data:sensor) -> pd.DataFrame:
     print("data", data)
     df_W = pd.DataFrame(data.valueW,columns=[f'W{i}' for i in range(len(data.valueW[0]))]) 
     df_W['U'] = data.valueU
     return df_W
+
 async def read_file(file:UploadFile = File()):
     if file is None:
         return {"Error not found"}
@@ -26,15 +29,38 @@ async def read_binary(file:UploadFile = File()):
         return {"Not Found"}
     read = await file.read()
     df = pd.read_excel(read)
+    h = df.columns
+    print("banco",df)
+    print("columnas",h)
     heads = list(df.columns)
+    df = changePropery(df)
+    print(df)
     x,y = count_v(heads)
     
-    print(read)
-    
 def changePropery(banco:pd.DataFrame) -> pd.DataFrame:
-    
-    print(banco)
-    
+    res = identBanco(banco)
+    if res:
+        banco["X1"] = banco["X1"].replace(mapeoBanco["cuantia"])
+        banco["X2"] = banco["X2"].replace(mapeoBanco["vivienda"])
+        banco["X3"] = banco["X3"].replace(mapeoBanco["trabajo"])
+        banco["YD1"] = banco["YD1"].replace(mapeoBanco["credito"])
+        return banco
+    else:
+        banco["X1"] = banco["X1"].replace(mapeoBanco["Edad"])
+        banco["X2"] = banco["X2"].replace(mapeoBanco["Anomalía"])
+        banco["X3"] = banco["X3"].replace(mapeoBanco["Astigmatismo"])
+        banco["YD1"] = banco["YD1"].replace(mapeoBanco["Lentes de contacto"])
+        return banco   
+    return banco  
+def identBanco(banco:pd.DataFrame) -> bool:
+    for indice,fila in banco.iterrows():
+        for columna in banco.columns:
+            df = banco.loc[indice,columna]
+            if df == "baja":
+                return True
+            if  df == "joven":
+                return False
+        
 ##contador de las entradas y salidas
 def count_v(list:list)-> any:
     x = 0
