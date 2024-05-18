@@ -35,6 +35,17 @@ async def read_binary(file:UploadFile = File()):
     x,y = count_v(heads)
     numpa= df.shape[0]
     return x,y,numpa,df
+async def read_binarySimulacion(file:UploadFile = File()):
+    if file is None:
+        return {"Not Found"}
+    read = await file.read()
+    df = pd.read_excel(read)
+    h = df.columns
+    heads = list(df.columns)
+    df = changeProperySimulacion(df)
+    x,y = count_v(heads)
+    numpa= df.shape[0]
+    return x,y,numpa,df
     
 def changePropery(banco:pd.DataFrame) -> pd.DataFrame:
     res = identBanco(banco)
@@ -49,7 +60,19 @@ def changePropery(banco:pd.DataFrame) -> pd.DataFrame:
         banco["X2"] = banco["X2"].replace(mapeoOptica["Anomalía"])
         banco["X3"] = banco["X3"].replace(mapeoOptica["Astigmatismo"])
         banco["YD1"] = banco["YD1"].replace(mapeoOptica["Lentes de contacto"])
-        return banco  
+        return banco 
+def changeProperySimulacion(banco:pd.DataFrame) -> pd.DataFrame:
+    res = identBanco(banco)
+    if res:
+        banco["X1"] = banco["X1"].replace(mapeoBanco["cuantia"])
+        banco["X2"] = banco["X2"].replace(mapeoBanco["vivienda"])
+        banco["X3"] = banco["X3"].replace(mapeoBanco["trabajo"])
+        return banco
+    if not res:
+        banco["X1"] = banco["X1"].replace(mapeoOptica["Edad"])
+        banco["X2"] = banco["X2"].replace(mapeoOptica["Anomalía"])
+        banco["X3"] = banco["X3"].replace(mapeoOptica["Astigmatismo"])
+        return banco   
 def identBanco(banco:pd.DataFrame) -> bool:
     for indice,fila in banco.iterrows():
         for columna in banco.columns:
