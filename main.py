@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 
 
-from src.controller.sensor import read_file,generateWAndU,sensor_data,generateWandUforCapas,read_binary
+from src.controller.sensor import read_file,generateWAndU,sensor_data,generateWandUforCapas,read_binary,read_binarySimulacion
 from src.upload.save_file import data_root
 from src.model.sensorW import sensor
 from src.model.capas import capas
@@ -40,7 +40,9 @@ async def current_data(res:Response,file:UploadFile= File()):
                   "cabeceras":cabeceras,
                   "salidas":y_columns.values.tolist(),
                   "entradas":x_columns.values.tolist()}]
-         
+        
+    
+    
 @app.post('/file',status_code=202,response_class=UJSONResponse)
 async def recive_file(res:Response,file:UploadFile = File()):
     if(file):
