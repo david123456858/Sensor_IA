@@ -21,7 +21,6 @@ app.add_middleware(
 @app.get('/')
 def read_root():
     return {"info":"Bienvenido a nuestro back del sensor"}
-## find() // find_one() 
 
 ##Conexion a mongoDB para poder extraer los datos 
 
@@ -34,16 +33,14 @@ async def current_data(res:Response,file:UploadFile= File()):
         cabeceras = df.columns.to_list()
         x_columns = df.filter(like='X')
         y_columns = df.filter(like='Y')
-        print(df)
+        ##print(df)
         return [{ "numEntradas": x,
                   "numSalidas": y,
                   "numPatrones":num_pa,
                   "cabeceras":cabeceras,
                   "salidas":y_columns.values.tolist(),
                   "entradas":x_columns.values.tolist()}]
-        
-    
-    
+         
 @app.post('/file',status_code=202,response_class=UJSONResponse)
 async def recive_file(res:Response,file:UploadFile = File()):
     if(file):
@@ -61,8 +58,7 @@ async def recive_file(res:Response,file:UploadFile = File()):
                   "U":u,
                   "cabeceras":cabeceras,
                   "salidas":y_columns.values.tolist(),
-                  "entradas":x_columns.values.tolist(),}]
-        
+                  "entradas":x_columns.values.tolist(),}]      
 @app.post('/simular',status_code=202,response_class=UJSONResponse)
 async def recive_file(res:Response,file:UploadFile = File()):
     if(file):
@@ -70,8 +66,7 @@ async def recive_file(res:Response,file:UploadFile = File()):
         x,y,num_pa,df = await read_file(file)
         print("df:",df)
         x_columns = df.filter(like='X')
-        return [{ "entradas":x_columns.values.tolist() }]
-        
+        return [{ "entradas":x_columns.values.tolist() }]     
 ##subiendo el arhivo
 @app.post("/save",status_code=200,response_class=UJSONResponse)
 def saveW_U(values_data:sensor):
@@ -95,5 +90,3 @@ async def file_recive(capas_info:capas,res:Response):
                 "umbrales":umbral_capa
             }   
         return data
-
-     
